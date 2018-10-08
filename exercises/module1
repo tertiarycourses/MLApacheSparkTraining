@@ -1,0 +1,18 @@
+// Machine Learning On Apache Spark
+// Module 1 Apache Spark Overview
+
+df = spark.read.csv('employee.txt',header=True);
+df.schema
+df.printSchema()
+df.columns
+
+df.take(5)
+df.count()
+
+df2 = df.sample(False,0.1)
+df2.count()
+
+df3 = df.filter("salary>10000")
+df3.count()
+
+f3.select("salary").show()

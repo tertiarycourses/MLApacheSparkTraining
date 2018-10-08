@@ -1,0 +1,64 @@
+// Machine Learning On Apache Spark
+// Module 2 Preprocessing
+
+// Normalize
+
+from pyspark.ml.feature import MinMaxScaler
+from pyspark.ml.linalg import Vectors
+
+df4 = spark.createDataFrame([
+(1,Vectors.dense([10.0,10000.0,1.0]),),
+(2,Vectors.dense([20.0,20000.0,2.0]),),
+(3,Vectors.dense([30.0,30000.0,3.0]),)
+],["id","features"])
+
+df4.take(1)
+
+scaler = MinMaxScaler(inputCol="features",outputCol="sfeatures")
+
+model = scaler.fit(df4)
+
+df5 = model.transform(df4)
+
+df5.select("features","sfeatures").show()
+
+// Standarize
+from pyspark.ml.feature import StandardScaler
+
+scaler2 = StandardScaler(inputCol="features",outputCol="sfeatures",withStd=True,withMean=True)
+
+model2 = scaler2.fit(df4)
+
+df6 = model2.transform(df4)
+
+df6.select("features","sfeatures").show()
+
+// Tokenizer
+from pyspark.ml.feature import Tokenizer
+
+df7 = spark.createDataFrame([
+(1,"This is an introduction to Spark MLib"),
+(2,"MLib contains libraries for classification and regression"),
+(3,"It also contains supporting tools for pipelines")
+],["id","sentence"])
+
+df7.show()
+
+token = Tokenizer(inputCol="sentence",outputCol="words")
+df8 = token.transform(df7)
+
+df8.show()
+
+//IF-IDF
+from pyspark.ml.feature import HashingTF, IDF
+
+hftoken = HashingTF(inputCol="words",outputCol="rawFeatures",numFeatures=20)
+df9 = hftoken.transform(df8)
+
+df9.take(1)
+
+idf = IDF(inputCol="rawFeatures",outputCol="idf_features")
+model3 = idf.fit(df9)
+df10 = model3.transform(df9)
+
+df10.take(1)

@@ -1,0 +1,38 @@
+// Machine Learning On Apache Spark
+// Module 3 Clustering
+
+from pyspark.ml.linalg import Vectors
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.clustering import KMeans
+
+
+df11 = spark.read.csv('clustering_dataset.csv',header=True,inferSchema=True)
+
+df11
+df11.show()
+df11.show(75)
+
+vectorAssembler = VectorAssembler(inputCols=["col1","col2","col3"],outputCol="features")
+df12 = vectorAssembler.transform(df11)
+
+df12.show()
+
+kmeans = KMeans().setK(3)
+kmeans = kmeans.setSeed(1)
+
+model4 = kmeans.fit(df12)
+centers = model4.clusterCenters()
+
+centers
+
+//Hierarchical Clustering
+
+from pyspark.ml.clustering import BisectingKMeans
+
+bkmeans = BisectingKMeans().setK(3)
+bkmeans = bkmeans.setSeed(1)
+
+model5 = bkmeans.fit(df12)
+centers2 = model5.clusterCenters()
+
+

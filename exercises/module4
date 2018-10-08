@@ -1,0 +1,76 @@
+// Machine Learning On Apache Spark
+// Module 4 Classification
+
+//Preprocessing
+
+from pyspark.ml.sql import *
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.feature import StringIndexer
+
+df13 = spark.read.csv('iris.csv',header=True,inferSchema=True)
+
+df13.take(1)
+
+vectorAssembler = VectorAssembler(inputCols=["sepal_width","sepal_length","petal_width","petal_length"],outputCol="features")
+
+df14 = vectorAssembler.transform(df13)
+
+df14.take(1)
+
+indexer = StringIndexer(inputCol="species",outputCol="label")
+df15 = indexer.fit(df14).transform(df14)
+//Navie Bayes
+
+
+from pyspark.ml.classification import NaiveBayes
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+
+training, test = df15.randomSplit([0.6, 0.4])
+
+
+training.count()
+test.count()
+
+nb = NaiveBayes(modelType="multinomial")
+
+model6 = nb.fit(training)
+
+prediction = model6.transform(test)
+
+evaluator = MulticlassClassificationEvaluator(labelCol="label",predictionCol="prediction",metricName="accuracy")
+
+accuracy = evaluator.evaluate(prediction)
+
+accuracy
+
+// Multilayer Perceptron
+
+from pyspark.ml.classification import MultilayerPerceptronClassifier
+
+layers =[4,5,5,3]
+
+mlp = MultilayerPerceptronClassifier(layers=layers,seed=1)
+
+model7 = mlp.fit(training)
+
+prediction = model7.transform(test)
+
+evaluator = MulticlassClassificationEvaluator(labelCol="label",predictionCol="prediction",metricName="accuracy")
+
+accuracy = evaluator.evaluate(prediction)
+accuracy
+
+//Decision Tree
+
+from pyspark.ml.classification import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(labelCol="label",featuresCol="features")
+
+model8 = dt.fit(training)
+
+prediction = model8.transform(test)
+
+evaluator = MulticlassClassificationEvaluator(labelCol="label",predictionCol="prediction",metricName="accuracy")
+
+accuracy = evaluator.evaluate(prediction)
+accuracy

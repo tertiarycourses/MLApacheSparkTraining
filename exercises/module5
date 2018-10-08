@@ -1,0 +1,62 @@
+// Machine Learning On Apache Spark
+// Module 5 Regression
+
+from pyspark.ml.regression import LinearRegression
+from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml.feature import VectorAssembler
+
+df16 = spark.read.csv('cctv.csv',header=True,inferSchema=True)
+
+vectorAssembler = VectorAssembler(inputCols=["AT","V","AP","RH"],outputCol="features")
+
+
+df17 = vectorAssembler.transform(df16)
+
+df17.take(1)
+
+
+//Linear Regression
+
+lr = LinearRegression(featuresCol="features",labelCol="PE")
+
+model9 = lr.fit(df17)
+
+model9.coefficients
+model9.intercept
+model9.summary.rootMeanSquaredError
+
+model9.save('lr.model')
+
+// Decision Tree Regression
+
+from pyspark.ml.regression import DecisionTreeRegressor
+
+training, test = df17.randomSplit([0.7, 0.3])
+
+dt = DecisionTreeRegressor(featuresCol="features",labelCol="PE")
+
+model10 = dt.fit(training)
+prediction = model10.transform(test)
+
+evaluator = RegressionEvaluator(labelCol="PE",predictionCol="prediction",metricName="rmse")
+rmse = evaluator.evaluate(prediction)
+
+rmse
+
+// Gradient Boosted Tree Regression
+
+from pyspark.ml.regression import GBTRegressor
+
+gbt = GBTRegressor(featuresCol="features",labelCol="PE")
+
+model11 = gbt.fit(training)
+
+prediction = model11.transform(test)
+
+evaluator = RegressionEvaluator(labelCol="PE",predictionCol="prediction",metricName="rmse")
+rmse = evaluator.evaluate(prediction)
+
+rmse
+
+
+
