@@ -15,4 +15,4 @@ df2.count()
 df3 = df.filter("salary>10000")
 df3.count()
 
-f3.select("salary").show()
+df3.select("salary").show()

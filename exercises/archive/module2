@@ -12,7 +12,7 @@ df4 = spark.createDataFrame([
 (3,Vectors.dense([30.0,30000.0,3.0]),)
 ],["id","features"])
 
-df4.take(1)
+df4.show()
 
 scaler = MinMaxScaler(inputCol="features",outputCol="sfeatures")
 
@@ -49,7 +49,7 @@ df8 = token.transform(df7)
 
 df8.show()
 
-//IF-IDF
+// TF-IDF
 from pyspark.ml.feature import HashingTF, IDF
 
 hftoken = HashingTF(inputCol="words",outputCol="rawFeatures",numFeatures=20)
